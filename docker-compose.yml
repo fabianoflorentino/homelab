@@ -95,8 +95,10 @@ services:
       - "5300:53/tcp"
       - "5300:53/udp"
     networks:
-      - dns
-      - proxy
+      dns:
+        ipv4_address: 172.18.0.10
+      proxy:
+        ipv4_address: 172.20.0.10
     healthcheck:
       test: ["CMD", "nslookup", "google.com", "127.0.0.1", "-p", "53"]
       interval: 30s
@@ -140,5 +142,11 @@ services:
 networks:
   proxy:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
   dns:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16

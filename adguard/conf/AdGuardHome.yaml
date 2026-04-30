@@ -23,7 +23,7 @@ dns:
   ratelimit_whitelist: []
   refuse_any: true
   upstream_dns:
-    - unbound:53
+    - 172.18.0.10:53  # Unbound (IP fixo na rede dns)
   upstream_dns_file: ""
   bootstrap_dns:
     - 9.9.9.9
