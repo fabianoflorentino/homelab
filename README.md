@@ -297,6 +297,7 @@ O Unbound agora usa **DNS over TLS** para consultas upstream:
 
 | Documento | Conteúdo |
 |---|---|
+| **[docs/INDEX.md](docs/INDEX.md)** | **📚 Índice completo da documentação (comece aqui!)** |
 | [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Soluções para problemas comuns (containers unhealthy, erros, etc.) |
 | [CHANGELOG.md](CHANGELOG.md) | Histórico de mudanças e melhorias implementadas |
 | [docs/SECURITY.md](docs/SECURITY.md) | Guia de segurança, senhas, autenticação e reset de credenciais |
