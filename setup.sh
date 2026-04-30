@@ -71,6 +71,7 @@ create_directories() {
     dirs=(
         "traefik/acme"
         "crowdsec/data"
+        "crowdsec/config"
         "adguard/work"
         "adguard/conf"
         "adguard/work/log"
@@ -85,9 +86,7 @@ create_directories() {
         fi
     done
 
-    # Note: containers now run with user: "1000:1000" so files should be created with correct ownership
-    # If needed, manually fix: sudo chown -R $USER:$USER traefik/ crowdsec/ adguard/
-    echo -e "${GREEN}Ownership: containers configured to use current user${NC}"
+    echo -e "${GREEN}Directory structure ready${NC}"
 }
 
 setup_acme() {

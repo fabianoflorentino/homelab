@@ -38,7 +38,6 @@ services:
     image: crowdsecurity/crowdsec:v1.7.7-slim
     container_name: crowdsec
     restart: unless-stopped
-    user: "1000:1000"
     environment:
       COLLECTIONS: >
         crowdsecurity/linux
@@ -46,7 +45,8 @@ services:
         crowdsecurity/nginx
     volumes:
       - ./crowdsec/data:/var/lib/crowdsec/data
-      - ./crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
+      - ./crowdsec/config:/etc/crowdsec
+      - ./crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml:ro
       - /var/log:/var/log:ro
       - ./adguard/work/log:/data/adguard-logs:ro
     networks:
