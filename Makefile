@@ -77,7 +77,7 @@ test-health:
 	@docker exec adguardhome nslookup google.com 172.18.0.10 2>&1 | head -5 || echo "AdGuard DNS test failed"
 	@echo ""
 	@echo "Testing Traefik:"
-	@docker exec traefik wget --quiet --tries=1 --spider http://localhost:8080 && echo "Traefik: OK" || echo "Traefik: FAIL"
+	@docker exec traefik wget --quiet --tries=1 --spider http://localhost:8080/ping && echo "Traefik: OK" || echo "Traefik: FAIL"
 	@echo ""
 	@echo "CrowdSec Bouncers:"
 	@docker exec crowdsec cscli bouncers list 2>/dev/null || echo "CrowdSec not ready"
