@@ -108,15 +108,43 @@ ping -c 3 unbound
 ```
 make: *** [Makefile:23: setup] Error 1
 ```
+Ou logs mostrando:
+```
+rsync: Permission denied (13)
+```
 
 ### Causa
-Bouncer já existe ou CrowdSec não está pronto.
+1. Bouncer já existe
+2. CrowdSec não está pronto
+3. **Permissões incorretas**: CrowdSec precisa rodar como root para criar arquivos de configuração
 
 ### Solução ✅ (Aplicada)
 
+**Atualização importante**: CrowdSec agora roda como root (removido `user: "1000:1000"`) porque precisa criar arquivos de configuração no `/etc/crowdsec`. Isso é seguro porque o container está isolado.
+
 O script `setup.sh` foi atualizado para:
-1. Deletar bouncer existente (se houver)
-2. Criar novo bouncer
+1. Criar diretório `crowdsec/config` para persistir configurações
+2. Deletar bouncer existente (se houver)
+3. Criar novo bouncer
+4. Verificar se foi criado com sucesso
+
+### Limpeza e regeneração
+
+Se continuar com erro, faça limpeza completa:
+
+```bash
+# Parar todos os containers
+docker compose down
+
+# Remover dados do CrowdSec (CUIDADO: apaga configurações!)
+rm -rf crowdsec/data/* crowdsec/config/*
+
+# Recriar estrutura
+mkdir -p crowdsec/data crowdsec/config
+
+# Rodar setup novamente
+make setup
+```
 3. Verificar se foi criado com sucesso
 
 ### Gerar manualmente
