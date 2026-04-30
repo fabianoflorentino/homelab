@@ -1,0 +1,16 @@
+filenames:
+  - /var/log/traefik-access.log
+labels:
+  type: traefik
+
+---
+filenames:
+  - /var/log/adguard/querylog.json
+labels:
+  type: adguard
+
+---
+filenames:
+  - /var/log/unbound.log
+labels:
+  type: unbound
