@@ -116,10 +116,12 @@ services:
       - ./adguard/work:/opt/adguardhome/work
       - ./adguard/conf:/opt/adguardhome/conf
     ports:
-      - "5301:53/tcp"
-      - "5301:53/udp"
-      - "3000:3000/tcp"
-      - "9617:9617"
+      - "53:53/tcp"      # DNS padrão (TCP)
+      - "53:53/udp"      # DNS padrão (UDP)
+      - "5301:53/tcp"    # DNS alternativo (compatibilidade)
+      - "5301:53/udp"    # DNS alternativo (compatibilidade)
+      - "3000:3000/tcp"  # Interface web
+      - "9617:9617"      # Métricas
     networks:
       - dns
       - proxy
