@@ -192,7 +192,7 @@ update_adguard_config() {
         if [ -n "$ag_password" ]; then
             hash=$(docker run --rm httpd:2.4 htpasswd -nbB admin "$ag_password" 2>/dev/null | cut -d: -f2)
             if [ -n "$hash" ]; then
-                sed -i "s|password: \\$2y\\$12\\$CHANGE_ME_HASH|password: $hash|" adguard/conf/AdGuardHome.yaml
+                awk -v h="$hash" '/password: \$\$2y\$\$12\$\$CHANGE_ME_HASH/ {sub(/\$2y\$12\$CHANGE_ME_HASH/, h)}1' adguard/conf/AdGuardHome.yaml > tmp && mv tmp adguard/conf/AdGuardHome.yaml
                 echo -e "${GREEN}AdGuard password updated${NC}"
             fi
         fi
