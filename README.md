@@ -15,14 +15,14 @@ Stack de homelab com DNS local protegido, bloqueio de anúncios/malware, DNS rec
 
 ```mermaid
 flowchart TD
-    A[Clientes da rede] --> B[AdGuard Home\n(Ad-blocking + Malware)]
-    B --> C[Unbound\n(DoT + DNSSEC + Cache)]
-    C --> D[Internet\n(Quad9/Cloudflare DoT)]
+    A[Clientes da rede] --> B[AdGuard Home<br/>Ad-blocking + Malware]
+    B --> C[Unbound<br/>DoT + DNSSEC + Cache]
+    C --> D[Internet<br/>Quad9/Cloudflare DoT]
 
-    E[Internet] --> F[Traefik\n(TLS + Proxy)]
+    E[Internet] --> F[Traefik<br/>TLS + Proxy]
     F --> G[Serviços Docker]
 
-    H[Logs: Traefik/AdGuard/Unbound] --> I[CrowdSec\n(Análise + Bloqueio)]
+    H[Logs: Traefik/AdGuard/Unbound] --> I[CrowdSec<br/>Analise + Bloqueio]
     I --> J[Bouncer]
     J --> F
 ```
