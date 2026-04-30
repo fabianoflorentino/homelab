@@ -91,10 +91,11 @@ services:
     volumes:
       - ./unbound/unbound.conf:/opt/unbound/etc/unbound/unbound.conf:ro
     ports:
-      - "5300:53/tcp"
-      - "5300:53/udp"
+      - "5335:53/tcp"
+      - "5335:53/udp"
     networks:
       - dns
+      - proxy
     healthcheck:
       test: ["CMD", "nslookup", "google.com", "127.0.0.1", "-p", "53"]
       interval: 30s
