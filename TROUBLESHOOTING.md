@@ -104,41 +104,44 @@ dialing unbound:53 over udp: no addresses
 ```
 
 ### Causa
-Containers em redes Docker diferentes não conseguem resolver nomes.
+Docker não resolve hostnames corretamente quando containers estão em múltiplas redes bridge customizadas.
 
 ### Solução ✅ (Aplicada)
 
-Ambos containers agora estão nas redes `dns` e `proxy`:
+**Configurado IPs fixos** para garantir conectividade confiável:
 
 ```yaml
-adguardhome:
-  networks:
-    - dns
-    - proxy
+# docker-compose.yml
+networks:
+  dns:
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+  proxy:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
 
 unbound:
   networks:
-    - dns
-    - proxy
-```
+    dns:
+      ipv4_address: 172.18.0.10  # IP fixo
+    proxy:
+      ipv4_address: 172.20.0.10
 
-E o upstream DNS foi configurado como:
-```yaml
+# AdGuardHome.yaml
 upstream_dns:
-  - unbound:53
+  - 172.18.0.10:53  # Unbound (IP fixo)
 ```
 
 ### Verificar conectividade
 
 ```bash
-# Entrar no container AdGuard
-docker exec -it adguardhome sh
+# Testar se AdGuard consegue resolver via Unbound
+docker exec adguardhome nslookup google.com 172.18.0.10
 
-# Testar resolução do Unbound
-nslookup google.com unbound
-
-# Testar ping (se disponível)
-ping -c 3 unbound
+# Ver logs do AdGuard para erros
+docker compose logs adguardhome | grep -i error
 ```
 
 ---
