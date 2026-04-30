@@ -85,13 +85,17 @@ create_directories() {
         fi
     done
 
-    # Fix ownership to current user
-    if [ -n "$SUDO_USER" ]; then
-        chown -R $SUDO_USER:$SUDO_USER .
-    else
-        chown -R $USER:$USER .
-    fi
-    echo -e "${GREEN}Fixed ownership for current user${NC}"
+    # Fix ownership of project directories only (not entire .)
+    for dir in traefik/acme crowdsec/data adguard/work adguard/conf; do
+        if [ -d "$dir" ]; then
+            if [ -n "$SUDO_USER" ]; then
+                sudo chown -R $SUDO_USER:$SUDO_USER "$dir" 2>/dev/null || chown -R $SUDO_USER:$SUDO_USER "$dir" 2>/dev/null
+            else
+                sudo chown -R $USER:$USER "$dir" 2>/dev/null || chown -R $USER:$USER "$dir" 2>/dev/null
+            fi
+        fi
+    done
+    echo -e "${GREEN}Fixed ownership for project directories${NC}"
 }
 
 setup_acme() {
