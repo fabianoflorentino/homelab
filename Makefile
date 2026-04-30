@@ -6,18 +6,19 @@ help:
 	@echo "Homelab DNS Management"
 	@echo ""
 	@echo "Commands:"
-	@echo "  make setup     - Run initial setup script"
-	@echo "  make up        - Start all services"
-	@echo "  make down      - Stop all services"
-	@echo "  make restart   - Restart all services"
-	@echo "  make logs      - View logs (all services)"
-	@echo "  make logs-svc  - View logs for specific service (make logs-svc svc=traefik)"
-	@echo "  make status    - Check status of all services"
-	@echo "  make pull      - Update all images"
-	@echo "  make backup    - Backup volumes to ./backups/"
-	@echo "  make clean     - Stop and remove all containers/volumes"
-	@echo "  make health    - Check health of all services"
-	@echo "  make crowdsec  - Run cscli command (make crowdsec cmd='alerts list')"
+	@echo "  make setup       - Run initial setup script"
+	@echo "  make up          - Start all services"
+	@echo "  make down        - Stop all services"
+	@echo "  make restart     - Restart all services"
+	@echo "  make logs        - View logs (all services)"
+	@echo "  make logs-svc    - View logs for specific service (make logs-svc svc=traefik)"
+	@echo "  make status      - Check status of all services"
+	@echo "  make pull        - Update all images"
+	@echo "  make backup      - Backup volumes to ./backups/"
+	@echo "  make clean       - Stop and remove all containers/volumes"
+	@echo "  make health      - Check health of all services"
+	@echo "  make test-health - Detailed health check with diagnostics"
+	@echo "  make crowdsec    - Run cscli command (make crowdsec cmd='alerts list')"
 
 setup:
 	@bash setup.sh
@@ -65,6 +66,21 @@ clean:
 health:
 	@echo "Checking service health..."
 	@$(COMPOSE) ps -a | grep -E "(unhealthy|starting)" || echo "All services healthy"
+
+test-health:
+	@echo "=== Detailed Health Check ==="
+	@echo ""
+	@echo "Container Status:"
+	@$(COMPOSE) ps --format "table {{.Name}}\t{{.Status}}\t{{.Health}}"
+	@echo ""
+	@echo "Testing DNS Resolution:"
+	@docker exec adguardhome nslookup google.com 172.18.0.10 2>&1 | head -5 || echo "AdGuard DNS test failed"
+	@echo ""
+	@echo "Testing Traefik:"
+	@docker exec traefik wget --quiet --tries=1 --spider http://localhost:8080 && echo "Traefik: OK" || echo "Traefik: FAIL"
+	@echo ""
+	@echo "CrowdSec Bouncers:"
+	@docker exec crowdsec cscli bouncers list 2>/dev/null || echo "CrowdSec not ready"
 
 crowdsec:
 	@if [ -z "$(cmd)" ]; then \
