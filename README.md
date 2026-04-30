@@ -188,6 +188,8 @@ Em **Settings → DNS Settings → Upstream DNS Servers**, o Unbound já deve es
 127.0.0.1:5335
 ```
 
+**🔐 Esqueceu a senha?** Veja o guia de reset em [TROUBLESHOOTING.md](TROUBLESHOOTING.md#problema-esqueci-a-senha-do-adguard-home)
+
 ### 9. Configurar DNS no roteador
 
 Defina o DNS primário dos dispositivos da rede como `IP_DO_SERVIDOR`.
@@ -295,4 +297,8 @@ O Unbound agora usa **DNS over TLS** para consultas upstream:
 
 | Documento | Conteúdo |
 |---|---|
+| [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Soluções para problemas comuns (containers unhealthy, erros, etc.) |
+| [CHANGELOG.md](CHANGELOG.md) | Histórico de mudanças e melhorias implementadas |
+| [docs/SECURITY.md](docs/SECURITY.md) | Guia de segurança, senhas, autenticação e reset de credenciais |
+| [docs/DNS_REWRITES_EXAMPLES.md](docs/DNS_REWRITES_EXAMPLES.md) | Exemplos de DNS Rewrites para acessar serviços por nome |
 | [docs/configure.md](docs/configure.md) | Configuração detalhada de cada ferramenta da stack |

@@ -96,6 +96,120 @@ docker compose logs traefik | grep -i certificate
 
 ---
 
+## Problema: Esqueci a senha do AdGuard Home
+
+### Sintoma
+Não consegue fazer login na interface web do AdGuard (`http://IP:3000`).
+
+### Solução: Resetar senha
+
+#### Método 1: Editar arquivo de configuração (Recomendado)
+
+```bash
+# Parar o AdGuard
+docker compose stop adguardhome
+
+# Editar o arquivo de configuração
+nano adguard/conf/AdGuardHome.yaml
+
+# Procure pela seção 'users:' e apague APENAS a linha do password
+# ANTES:
+# users:
+#   - username: admin
+#     password: "$2a$10$..."
+#
+# DEPOIS:
+# users:
+#   - username: admin
+#     password: ""
+
+# Salve (Ctrl+O, Enter, Ctrl+X)
+
+# Reiniciar o AdGuard
+docker compose up -d adguardhome
+
+# Acesse http://IP:3000 e configure nova senha
+```
+
+#### Método 2: Resetar completamente (Perde configurações)
+
+```bash
+# Parar o AdGuard
+docker compose down
+
+# Fazer backup da configuração atual (opcional)
+cp adguard/conf/AdGuardHome.yaml adguard/conf/AdGuardHome.yaml.backup
+
+# Remover dados do AdGuard
+rm -rf adguard/work/*
+rm adguard/conf/AdGuardHome.yaml
+
+# Recriar estrutura
+mkdir -p adguard/work/data adguard/work/log
+mkdir -p adguard/conf
+
+# Copiar configuração base (se houver backup)
+cp adguard/conf/AdGuardHome.yaml.template adguard/conf/AdGuardHome.yaml
+
+# Ou baixar template do repositório
+curl -o adguard/conf/AdGuardHome.yaml \
+  https://raw.githubusercontent.com/fabianoflorentino/homelab/master/adguard/conf/AdGuardHome.yaml.template
+
+# Corrigir permissões
+sudo chown -R $USER:$USER adguard/
+
+# Reiniciar
+docker compose up -d
+
+# Acesse http://IP:3000 e faça o setup inicial
+```
+
+#### Método 3: Gerar nova senha manualmente
+
+```bash
+# Parar o AdGuard
+docker compose stop adguardhome
+
+# Gerar hash bcrypt de nova senha (exemplo: "novasenha123")
+docker run --rm alpine sh -c "apk add --no-cache bcrypt-tool && htpasswd -nbBC 10 admin novasenha123 | cut -d: -f2"
+
+# Copie o hash gerado (começa com $2y$10$...)
+
+# Editar configuração
+nano adguard/conf/AdGuardHome.yaml
+
+# Substitua a linha password pelo novo hash:
+# users:
+#   - username: admin
+#     password: "$2y$10$HASH_GERADO_AQUI"
+
+# Reiniciar
+docker compose up -d adguardhome
+
+# Faça login com: admin / novasenha123
+```
+
+### Importante
+- **Sempre faça backup** antes de editar `AdGuardHome.yaml`
+- O método 1 é o mais seguro (não perde configurações)
+- Após resetar, configure uma senha forte
+- O AdGuard criptografa senhas com bcrypt
+
+### Verificar se funcionou
+
+```bash
+# Ver se o container está rodando
+docker compose ps adguardhome
+
+# Ver logs para erros
+docker compose logs adguardhome | tail -20
+
+# Acessar interface
+http://192.168.0.100:3000
+```
+
+---
+
 ## Problema: AdGuard não consegue conectar ao Unbound
 
 ### Sintoma
