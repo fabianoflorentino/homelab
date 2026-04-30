@@ -44,13 +44,22 @@ docker compose version
 
 ```bash
 # Clone ou extraia o projeto
-cd /srv/homelab
+cd ~/homelab
 
 # Execute o script de setup (irá guiar toda a configuração)
 bash setup.sh
 
 # Ou use o Makefile
 make setup
+make up
+```
+
+### ⚠️ Se houver erro de permissão no AdGuard:
+
+```bash
+# Use o script de correção
+chmod +x fix-permissions.sh
+./fix-permissions.sh
 make up
 ```
 

@@ -1,47 +1,88 @@
 # Troubleshooting - Homelab Stack
 
+## 🔴 ERRO CRÍTICO: AdGuard com "permission denied" no leases.json
+
+### Sintoma
+```
+[fatal] initing dhcp: loading db: reading db: open /opt/adguardhome/work/data/leases.json: permission denied
+```
+
+Container reiniciando constantemente.
+
+### Causa
+Arquivos no diretório `adguard/work` foram criados como root, mas o container AdGuard roda com `user: "1000:1000"`.
+
+### Solução Rápida ✅
+
+Execute no servidor:
+
+```bash
+cd ~/homelab
+
+# Use o script de correção automática
+chmod +x fix-permissions.sh
+./fix-permissions.sh
+
+# Ou manualmente:
+docker compose down
+sudo chown -R $USER:$USER adguard/work adguard/conf traefik/acme
+chmod 600 traefik/acme/acme.json
+docker compose up -d
+```
+
+**IMPORTANTE**: Se o problema persistir, delete os dados e reconfigure:
+
+```bash
+docker compose down
+rm -rf adguard/work/*
+mkdir -p adguard/work/data adguard/work/log
+sudo chown -R $USER:$USER adguard/
+docker compose up -d
+# Acesse http://IP_SERVIDOR:3000 para configurar
+```
+
+---
+
 ## Problema: Token Cloudflare com erro "Cannot use the access token from location: IP"
 
 ### Causa
-O token Cloudflare está restrito a IPs específicos ou tem restrições de uso.
+O token Cloudflare está restrito a IPs específicos.
 
-### Solução
+### ⚠️ Solução Obrigatória
 
-1. **Acesse o painel da Cloudflare**: https://dash.cloudflare.com/profile/api-tokens
+**O erro mostra que seu IP público está tentando usar o token mas não está autorizado.**
 
-2. **Localize o token** criado anteriormente e clique em "Edit"
+Você **DEVE** fazer uma destas opções:
 
-3. **Verifique as restrições de IP**:
-   - Na seção "IP Address Filtering"
-   - Se houver IPs listados, **adicione o IP do seu servidor homelab**
-   - Ou **remova todas as restrições de IP** (menos seguro, mas funciona)
+#### Opção 1: Remover Restrições de IP (Recomendado para homelab)
 
-4. **Verifique as permissões**:
-   ```
-   Zone:DNS:Edit
-   Zone:Zone:Read
-   ```
+1. Acesse: https://dash.cloudflare.com/profile/api-tokens
+2. Clique em **Edit** no seu token API
+3. Vá para **IP Address Filtering**
+4. **Delete todos os IPs** da lista (deixe em branco)
+5. Clique em **Continue to summary** → **Save**
+6. **Não precisa gerar novo token!** O mesmo token agora funcionará sem restrições
 
-5. **Zone Resources** deve incluir:
-   - Include → Specific zone → fabianoflorentino.dev
+#### Opção 2: Adicionar IP do Servidor
 
-6. **Salve** o token e **atualize** no arquivo `.env`:
+1. Descubra o IP público do servidor:
    ```bash
-   nano .env
-   # Atualize CF_DNS_API_TOKEN=seu_novo_token
+   curl -4 ifconfig.me
    ```
+2. Na Cloudflare, **IP Address Filtering** → **Add**
+3. Adicione o IP retornado
+4. Salve
 
-7. **Reinicie o Traefik**:
-   ```bash
-   make restart
-   # ou
-   docker compose restart traefik
-   ```
+#### Depois de corrigir na Cloudflare:
 
-8. **Verifique os logs**:
-   ```bash
-   docker compose logs traefik | grep -i cloudflare
-   ```
+```bash
+# Não precisa mudar .env (token é o mesmo)
+# Apenas reinicie o Traefik
+docker compose restart traefik
+
+# Verifique se funcionou
+docker compose logs traefik | grep -i certificate
+```
 
 ### Alternativa: Criar novo token sem restrições
 
