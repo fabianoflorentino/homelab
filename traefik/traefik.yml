@@ -23,7 +23,7 @@ certificatesResolvers:
         provider: cloudflare
 
 accessLog:
-  filePath: /var/log/traefik-access.log
+  filePath: /tmp/traefik-access.log
 
 log:
   level: INFO
