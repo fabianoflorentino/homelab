@@ -1,0 +1,31 @@
+http:
+  middlewares:
+    redirect-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+    security-headers:
+      headers:
+        frameDeny: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        forceSTSHeader: true
+
+    dashboard-auth:
+      basicAuth:
+        users:
+          - "admin:$apr1$CHANGE_ME"
+
+    dashboard-ratelimit:
+      rateLimit:
+        average: 20
+        burst: 50
+
+    dashboard-ipwhitelist:
+      ipAllowList:
+        sourceRange:
+          - "192.168.1.0/24"

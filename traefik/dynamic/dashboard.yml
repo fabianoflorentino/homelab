@@ -1,0 +1,14 @@
+http:
+  routers:
+    traefik-dashboard:
+      rule: "Host(`traefik.seudominio.com`)"
+      service: api@internal
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+      middlewares:
+        - dashboard-auth
+        - dashboard-ratelimit
+        - dashboard-ipwhitelist
+        - security-headers

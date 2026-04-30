@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+traefik/acme/acme.json
+backups/
+*.log
+.DS_Store
+.vscode/
+.idea/
