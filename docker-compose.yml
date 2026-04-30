@@ -8,8 +8,8 @@ services:
     command:
       - --configFile=/etc/traefik/traefik.yml
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      - "8443:443"
     environment:
       - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
     volumes:
@@ -96,7 +96,7 @@ services:
     networks:
       - dns
     healthcheck:
-      test: ["CMD", "nslookup", "google.com", "localhost", "-p", "53"]
+      test: ["CMD", "nslookup", "google.com", "127.0.0.1", "-p", "53"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -111,10 +111,16 @@ services:
     image: adguard/adguardhome:v0.107.74
     container_name: adguardhome
     restart: unless-stopped
-    network_mode: host
     volumes:
       - ./adguard/work:/opt/adguardhome/work
       - ./adguard/conf:/opt/adguardhome/conf
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "3000:3000/tcp"
+      - "9617:9617"
+    networks:
+      - dns
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
       interval: 30s
@@ -126,8 +132,6 @@ services:
         limits:
           cpus: '1.0'
           memory: 512M
-    ports:
-      - "9617:9617"
 
 networks:
   proxy:
