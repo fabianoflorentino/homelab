@@ -85,17 +85,9 @@ create_directories() {
         fi
     done
 
-    # Fix ownership of project directories only (not entire .)
-    for dir in traefik/acme crowdsec/data adguard/work adguard/conf; do
-        if [ -d "$dir" ]; then
-            if [ -n "$SUDO_USER" ]; then
-                sudo chown -R $SUDO_USER:$SUDO_USER "$dir" 2>/dev/null || chown -R $SUDO_USER:$SUDO_USER "$dir" 2>/dev/null
-            else
-                sudo chown -R $USER:$USER "$dir" 2>/dev/null || chown -R $USER:$USER "$dir" 2>/dev/null
-            fi
-        fi
-    done
-    echo -e "${GREEN}Fixed ownership for project directories${NC}"
+    # Note: containers now run with user: "1000:1000" so files should be created with correct ownership
+    # If needed, manually fix: sudo chown -R $USER:$USER traefik/ crowdsec/ adguard/
+    echo -e "${GREEN}Ownership: containers configured to use current user${NC}"
 }
 
 setup_acme() {
