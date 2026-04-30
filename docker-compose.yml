@@ -112,6 +112,7 @@ services:
     image: adguard/adguardhome:v0.107.74
     container_name: adguardhome
     restart: unless-stopped
+    user: "1000:1000"
     volumes:
       - ./adguard/work:/opt/adguardhome/work
       - ./adguard/conf:/opt/adguardhome/conf

@@ -84,6 +84,14 @@ create_directories() {
             echo -e "${GREEN}Already exists: $dir${NC}"
         fi
     done
+
+    # Fix ownership to current user
+    if [ -n "$SUDO_USER" ]; then
+        chown -R $SUDO_USER:$SUDO_USER .
+    else
+        chown -R $USER:$USER .
+    fi
+    echo -e "${GREEN}Fixed ownership for current user${NC}"
 }
 
 setup_acme() {
