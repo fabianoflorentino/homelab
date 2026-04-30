@@ -116,8 +116,8 @@ services:
       - ./adguard/work:/opt/adguardhome/work
       - ./adguard/conf:/opt/adguardhome/conf
     ports:
-      - "5335:53/tcp"
-      - "5335:53/udp"
+      - "5301:53/tcp"
+      - "5301:53/udp"
       - "3000:3000/tcp"
       - "9617:9617"
     networks:
