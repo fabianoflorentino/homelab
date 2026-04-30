@@ -6,7 +6,7 @@ http:
   session_ttl: 720h
 users:
   - username: admin
-    password: $2y$12$CHANGE_ME_HASH
+    password: ""
 dns:
   bind_hosts:
     - 0.0.0.0
