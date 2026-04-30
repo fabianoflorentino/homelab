@@ -49,7 +49,7 @@ services:
       - ./crowdsec/data:/var/lib/crowdsec/data
       - ./crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
       - /var/log:/var/log:ro
-      - ./adguard/work/log:/var/log/adguard:ro
+      - ./adguard/work/log:/data/adguard-logs:ro
     networks:
       - proxy
       - dns

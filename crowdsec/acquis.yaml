@@ -5,7 +5,7 @@ labels:
 
 ---
 filenames:
-  - /var/log/adguard/querylog.json
+  - /data/adguard-logs/querylog.json
 labels:
   type: adguard
 
