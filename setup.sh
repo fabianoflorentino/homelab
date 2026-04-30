@@ -172,17 +172,21 @@ generate_crowdsec_api_key() {
 
     echo -e "${YELLOW}Starting CrowdSec to generate API key...${NC}"
     docker compose up -d crowdsec
-    sleep 15
+
+    echo -e "${YELLOW}Waiting for CrowdSec to be ready (30s)...${NC}"
+    sleep 30
 
     echo -e "${YELLOW}Generating bouncer API key...${NC}"
-    api_key=$(docker exec crowdsec cscli bouncers add traefik-bouncer -o raw 2>/dev/null)
+    api_key=$(docker exec crowdsec cscli bouncers add traefik-bouncer -o raw 2>&1)
 
-    if [ -n "$api_key" ]; then
-        sed -i "s|CROWDSEC_BOUNCER_API_KEY: CHANGE_ME|CROWDSEC_BOUNCER_API_KEY: $api_key|" docker-compose.yml
+    if [ -n "$api_key" ] && [[ ! "$api_key" =~ "error" ]]; then
+        # Use awk for safe replacement (handles special chars)
+        awk -v key="$api_key" '{gsub(/CROWDSEC_BOUNCER_API_KEY: CHANGE_ME/, "CROWDSEC_BOUNCER_API_KEY: " key)}1' docker-compose.yml > tmp && mv tmp docker-compose.yml
         echo -e "${GREEN}CrowdSec Bouncer API Key generated and saved${NC}"
         echo -e "${YELLOW}API Key: $api_key${NC}"
     else
-        echo -e "${RED}Failed to generate API key${NC}"
+        echo -e "${RED}Failed to generate API key. Check: docker logs crowdsec${NC}"
+        echo -e "${YELLOW}You can manually run: docker exec crowdsec cscli bouncers add traefik-bouncer -o raw${NC}"
     fi
 }
 
