@@ -2,6 +2,11 @@
 .env.*
 !.env.example
 traefik/acme/acme.json
+crowdsec/data/*
+crowdsec/config/*
+!crowdsec/config/.gitkeep
+adguard/work/*
+!adguard/work/.gitkeep
 backups/
 *.log
 .DS_Store
