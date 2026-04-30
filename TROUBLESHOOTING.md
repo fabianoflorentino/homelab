@@ -246,6 +246,83 @@ docker compose logs -f unbound
 
 ---
 
+## Problema: Containers marcados como "unhealthy"
+
+### Sintoma
+```bash
+docker compose ps
+# Mostra containers como "unhealthy" mas eles estão funcionando
+```
+
+### Causa
+Healthchecks configurados incorretamente - usando comandos que não existem nos containers ou portas erradas.
+
+### Solução ✅ (Aplicada)
+
+Os healthchecks foram corrigidos em `docker-compose.yml`:
+
+#### Traefik
+```yaml
+# ANTES (errado - porta 80 não existe)
+test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+
+# DEPOIS (correto - porta 8080 interna)
+test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080"]
+```
+
+#### Unbound
+```yaml
+# ANTES (errado - nslookup não existe no container)
+test: ["CMD", "nslookup", "google.com", "127.0.0.1", "-p", "53"]
+
+# DEPOIS (correto - drill está disponível)
+test: ["CMD", "drill", "google.com", "@127.0.0.1"]
+```
+
+#### CrowdSec Bouncer
+```yaml
+# ANTES (errado - wget não existe no container)
+test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/ping"]
+
+# DEPOIS (correto - netcat para testar porta)
+test: ["CMD", "sh", "-c", "nc -z localhost 8080 || exit 1"]
+```
+
+### Aplicar correções
+
+Se você ainda tem a versão antiga do `docker-compose.yml`:
+
+```bash
+# Fazer backup
+cp docker-compose.yml docker-compose.yml.backup
+
+# Baixar versão atualizada do repositório
+git pull
+
+# Ou editar manualmente conforme acima
+
+# Recriar containers com novos healthchecks
+docker compose up -d --force-recreate
+
+# Verificar status (aguarde ~30s)
+docker compose ps
+```
+
+### Verificar saúde dos serviços
+
+```bash
+# Ver status resumido
+make health
+
+# Ver detalhes completos
+docker compose ps
+
+# Ver logs de healthcheck de um container específico
+docker inspect traefik --format '{{json .State.Health}}' | jq
+```
+
+---
+
 ## Comandos úteis de diagnóstico
 
 ### Ver logs de todos os serviços

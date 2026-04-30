@@ -63,6 +63,17 @@ chmod +x fix-permissions.sh
 make up
 ```
 
+### ℹ️ Healthchecks Configurados
+
+Todos os containers possuem healthchecks para monitoramento automático:
+- **Traefik**: Verifica se a porta 8080 está respondendo
+- **Unbound**: Testa resolução DNS com `drill google.com`
+- **AdGuard**: Verifica se a interface web (porta 3000) está acessível
+- **CrowdSec**: Verifica se o `cscli` está funcionando
+- **CrowdSec Bouncer**: Testa conectividade na porta 8080
+
+Use `make health` ou `docker compose ps` para ver o status de saúde.
+
 ---
 
 ## Instalação Manual
@@ -195,18 +206,57 @@ Acesse o dashboard em `https://traefik.meudominio.com.br` com o login `admin`.
 
 ## Comandos Úteis (Makefile)
 
+### Gerenciamento Básico
 ```bash
 make setup      # Executar setup automatizado
 make up         # Subir todos os serviços
 make down       # Parar todos os serviços
 make restart    # Reiniciar serviços
-make logs       # Ver logs (todos)
-make logs-svc svc=traefik   # Ver logs de serviço específico
 make status     # Status dos containers
-make health     # Verificar saúde dos serviços
+```
+
+### Monitoramento e Logs
+```bash
+make logs                    # Ver logs (todos)
+make logs-svc svc=traefik    # Ver logs de serviço específico
+make health                  # Verificar saúde dos serviços (resumo)
+make test-health             # Health check detalhado com diagnósticos
+```
+
+### Manutenção
+```bash
 make pull       # Atualizar imagens
 make backup     # Backup dos volumes
-make crowdsec cmd='alerts list'  # Comandos CrowdSec
+make clean      # Parar e remover containers/volumes (⚠️ CUIDADO!)
+```
+
+### CrowdSec
+```bash
+make crowdsec cmd='alerts list'      # Ver alertas
+make crowdsec cmd='decisions list'   # Ver IPs banidos
+make crowdsec cmd='bouncers list'    # Ver bouncers ativos
+make crowdsec cmd='metrics'          # Métricas
+```
+
+### 🔄 Refazer Stack Completa
+
+Se algo der errado e você quiser recomeçar do zero:
+
+```bash
+# 1. Fazer backup (opcional mas recomendado)
+make backup
+
+# 2. Parar e remover tudo
+make clean
+
+# 3. Reconfigurar (vai gerar nova API key do CrowdSec)
+make setup
+
+# 4. Subir novamente
+make up
+
+# 5. Verificar saúde
+make test-health
 ```
 
 Ou com Docker Compose diretamente:
