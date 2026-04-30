@@ -14,13 +14,13 @@ providers:
     directory: /etc/traefik/dynamic
     watch: true
 
-certificatesResolvers:
-  cloudflare:
-    acme:
-      email: seu-email@dominio.com
-      storage: /acme/acme.json
-      dnsChallenge:
-        provider: cloudflare
+# certificatesResolvers:
+#  cloudflare:
+#    acme:
+#      email: seu-email@dominio.com
+#      storage: /acme/acme.json
+#      dnsChalenge:
+#        provider: cloudflare
 
 accessLog:
   filePath: /tmp/traefik-access.log

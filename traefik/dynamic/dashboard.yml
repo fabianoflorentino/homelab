@@ -5,8 +5,8 @@ http:
       service: api@internal
       entryPoints:
         - websecure
-      tls:
-        certResolver: cloudflare
+    # tls:
+    #   certResolver: cloudflare
       middlewares:
         - dashboard-auth
         - dashboard-ratelimit
