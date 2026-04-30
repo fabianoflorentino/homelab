@@ -23,7 +23,7 @@ services:
     labels:
       - traefik.enable=true
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -74,7 +74,7 @@ services:
     networks:
       - proxy
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/ping"]
+      test: ["CMD", "sh", "-c", "nc -z localhost 8080 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -100,7 +100,7 @@ services:
       proxy:
         ipv4_address: 172.20.0.10
     healthcheck:
-      test: ["CMD", "nslookup", "google.com", "127.0.0.1", "-p", "53"]
+      test: ["CMD", "drill", "google.com", "@127.0.0.1"]
       interval: 30s
       timeout: 10s
       retries: 3
